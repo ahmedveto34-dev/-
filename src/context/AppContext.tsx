@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { Evaluation } from '../data/checklist';
+import { gasApi } from '../services/gasService';
 
 interface Policy {
   id: string;
@@ -100,11 +101,30 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   React.useEffect(() => {
     localStorage.setItem('ic_policies', JSON.stringify(policies));
+    // Save policies to Google Sheets via external API
+    gasApi('savePolicies', { policies });
   }, [policies]);
 
   React.useEffect(() => {
     localStorage.setItem('ic_archives', JSON.stringify(archives));
   }, [archives]);
+
+  // Load data from Google Sheets on mount
+  React.useEffect(() => {
+    const loadData = async () => {
+      const policiesRes = await gasApi('loadPolicies');
+      if (policiesRes && policiesRes.policies && policiesRes.policies.length > 0) {
+        setPolicies(policiesRes.policies);
+      }
+
+      const archivesRes = await gasApi('loadArchives');
+      if (archivesRes && archivesRes.archives && archivesRes.archives.length > 0) {
+        setArchives(archivesRes.archives);
+      }
+    };
+    
+    loadData();
+  }, []);
 
   const setEvaluation = (itemId: string, evalValue: Evaluation) => {
     setEvaluations((prev) => ({ ...prev, [itemId]: evalValue }));
@@ -157,8 +177,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setTimeout(() => setToastMessage(null), 3000);
   };
 
-  const saveToArchive = (report: ArchivedReport) => {
+  const saveToArchive = async (report: ArchivedReport) => {
     setArchives(prev => [report, ...prev]);
+    // Save archive to Google Sheets via external API
+    await gasApi('saveArchive', { archive: report });
   };
 
   const resetReport = () => {

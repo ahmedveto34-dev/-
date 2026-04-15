@@ -1,20 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
-
-// Declare google namespace for TypeScript
-declare const google: any;
-
-let genAI: any = null;
-
-const getGenAI = () => {
-  if (!genAI) {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      throw new Error("GEMINI_API_KEY is not defined. Please check your settings.");
-    }
-    genAI = new GoogleGenAI({ apiKey });
-  }
-  return genAI;
-};
+import { gasApi } from './gasService';
 
 export const generateCorrectiveAction = async (itemText: string, departmentName: string, policyName?: string): Promise<string> => {
   const prompt = `
@@ -35,29 +19,13 @@ ${policyName ? `- السياسة المرجعية: "${policyName}"` : ''}
 6. الرد يجب أن يكون باللغة العربية فقط.
   `;
 
-  // Check if running in Google Apps Script environment
-  if (typeof google !== 'undefined' && google.script && google.script.run) {
-    return new Promise((resolve, reject) => {
-      google.script.run
-        .withSuccessHandler((result: string) => resolve(result))
-        .withFailureHandler((error: any) => reject(new Error(error.message || 'خطأ في الاتصال بـ Google Apps Script')))
-        .generateCorrectiveActionGAS(prompt);
-    });
-  }
-
-  // Otherwise, use @google/genai in the frontend (for AI Studio development)
+  // Use the external Google Apps Script API
   try {
-    const ai = getGenAI();
-    const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: prompt,
-    });
-
-    if (response.text) {
-      return response.text.trim();
+    const res = await gasApi('generateAI', { prompt });
+    if (res && res.text) {
+      return res.text.trim();
     }
-    
-    throw new Error('استجابة فارغة من الذكاء الاصطناعي');
+    return "حدث خطأ أثناء الاتصال بالخادم.";
   } catch (error: any) {
     console.error("AI Generation Error:", error);
     return `خطأ في التوليد: ${error?.message || 'خطأ غير معروف'}`;
