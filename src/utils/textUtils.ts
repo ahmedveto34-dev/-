@@ -1,0 +1,41 @@
+export const negateText = (text: string): string => {
+  const t = text.trim();
+  
+  if (t.startsWith('نظافة')) return t.replace('نظافة', 'عدم نظافة');
+  if (t.startsWith('تعقيم')) return t.replace('تعقيم', 'عدم تعقيم');
+  if (t.startsWith('التزام')) return t.replace('التزام', 'عدم التزام');
+  if (t.startsWith('الكمامة')) return 'عدم ارتداء ' + t;
+  if (t.startsWith('التعامل')) return 'قصور في ' + t;
+  if (t.startsWith('توافر')) return t.replace('توافر', 'عدم توافر');
+  if (t.startsWith('ملصقات')) return 'عدم وجود ' + t;
+  if (t.startsWith('تنظيم')) return 'عدم ' + t;
+  if (t.startsWith('اتباع')) return 'عدم ' + t;
+  if (t.startsWith('التباعد')) return 'عدم الالتزام بـ ' + t;
+  if (t.startsWith('فصل')) return 'عدم ' + t;
+  if (t.startsWith('القفازات')) return 'عدم توفر ' + t;
+  if (t.startsWith('حاويات')) return 'عدم وجود ' + t;
+  if (t.startsWith('غرفة العزل')) return 'قصور في تجهيزات ' + t;
+  if (t.startsWith('تطهير')) return 'عدم ' + t;
+  if (t.startsWith('تخزين')) return 'سوء ' + t;
+  if (t.startsWith('تنظيف')) return 'عدم ' + t;
+  if (t.startsWith('ارتداء')) return 'عدم ' + t;
+  if (t.startsWith('غلق')) return 'عدم ' + t;
+  if (t.startsWith('الحقن')) return 'عدم الالتزام بسياسات ' + t;
+  if (t.startsWith('التخلص')) return 'عدم ' + t;
+  if (t.startsWith('أحواض')) return 'قصور في ' + t;
+  if (t.startsWith('استخدام')) return 'عدم ' + t;
+  if (t.startsWith('وجود')) return t.replace('وجود', 'عدم وجود');
+  if (t.startsWith('حفظ')) return 'سوء ' + t;
+  if (t.startsWith('توثيق')) return 'عدم ' + t;
+  if (t.startsWith('فرز')) return 'عدم ' + t;
+  if (t.startsWith('الدفاتر')) return 'عدم اكتمال ' + t;
+  if (t.startsWith('يومي')) return 'عدم عمل اختبار ' + t;
+  if (t.startsWith('جمع')) return 'عدم ' + t;
+  if (t.startsWith('صلاحية')) return 'انتهاء ' + t;
+  if (t.startsWith('تجفيف')) return 'عدم ' + t;
+  if (t.startsWith('كي')) return 'عدم ' + t;
+  if (t.startsWith('نقل')) return 'سوء ' + t;
+  if (t.startsWith('غسل')) return 'عدم ' + t;
+
+  return 'عدم الالتزام بـ: ' + t;
+};
