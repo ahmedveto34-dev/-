@@ -157,7 +157,8 @@ function generateCorrectiveActionGAS(prompt) {
     return "خطأ: يرجى إضافة مفتاح Gemini API في ملف Code.gs";
   }
 
-  var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + apiKey;
+  // استخدام الإصدار v1beta مع الموديل gemini-1.5-flash-latest
+  var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=' + apiKey;
   
   var payload = {
     "contents": [{
@@ -182,6 +183,14 @@ function generateCorrectiveActionGAS(prompt) {
     if (json.candidates && json.candidates.length > 0) {
       return json.candidates[0].content.parts[0].text;
     } else if (json.error) {
+      // محاولة استخدام موديل بديل في حال فشل الأول
+      var fallbackUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' + apiKey;
+      var fallbackResponse = UrlFetchApp.fetch(fallbackUrl, options);
+      var fallbackJson = JSON.parse(fallbackResponse.getContentText());
+      
+      if (fallbackJson.candidates && fallbackJson.candidates.length > 0) {
+        return fallbackJson.candidates[0].content.parts[0].text;
+      }
       return "خطأ من Gemini API: " + json.error.message;
     } else {
       return "خطأ في التوليد: " + responseText;
