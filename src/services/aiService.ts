@@ -22,10 +22,20 @@ ${policyName ? `- السياسة المرجعية: "${policyName}"` : ''}
   // Use the external Google Apps Script API
   try {
     const res = await gasApi('generateAI', { prompt });
-    if (res && res.text) {
+    
+    if (!res) {
+      return "خطأ: تعذر الاتصال بالخادم. يرجى التأكد من تحديث رابط Google Apps Script (New Deployment).";
+    }
+
+    if (res.error) {
+      return `خطأ من الخادم: ${res.error}`;
+    }
+
+    if (res.text) {
       return res.text.trim();
     }
-    return "حدث خطأ أثناء الاتصال بالخادم.";
+    
+    return "حدث خطأ غير معروف أثناء الاتصال بالخادم.";
   } catch (error: any) {
     console.error("AI Generation Error:", error);
     return `خطأ في التوليد: ${error?.message || 'خطأ غير معروف'}`;
